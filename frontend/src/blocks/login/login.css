@@ -1,0 +1,14 @@
+.login {
+  position: relative;
+  justify-content: center;
+  max-width: 358px;
+  margin: auto;
+  padding-bottom: 0;
+  align-content: center;
+}
+
+@media screen and (max-width: 630px) {
+  .login {
+    max-width: 260px;
+  }
+}

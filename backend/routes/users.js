@@ -1,16 +1,20 @@
 const usersRouter = require('express').Router();
 const {
-  getUsers,
   getUserById,
+  login,
   createUser,
   updateUserProfile,
   updateUserAvatar,
 } = require('../controllers/users');
+const validate = require('../middlewares/validation');
+const auth = require('../middlewares/auth');
 
-usersRouter.get('/users', getUsers);
-usersRouter.get('/users/:id', getUserById);
-usersRouter.post('/users', createUser);
-usersRouter.patch('/users/me', updateUserProfile);
-usersRouter.patch('/users/me/avatar', updateUserAvatar);
+// usersRouter.get('/users/:id', getUserById);
+// usersRouter.post('/users', createUser);
+usersRouter.post('/signin', validate, login); // sprint 15
+usersRouter.post('/signup', validate, createUser); // sprint 15
+usersRouter.get('/users/me', auth, getUserById);
+usersRouter.patch('/users/me', auth, updateUserProfile);
+usersRouter.patch('/users/me/avatar', auth, updateUserAvatar);
 
 module.exports = usersRouter;

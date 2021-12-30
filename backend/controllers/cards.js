@@ -32,7 +32,7 @@ module.exports.createCard = (req, res) => {
 
 // deletes a card by id
 module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     // Error handling by custom function
     .orFail(() => {
       const error = new Error('Error: No card found with that id');
@@ -40,13 +40,28 @@ module.exports.deleteCardById = (req, res) => {
       error.name = 'DocumentNotFoundError';
       throw error;
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      // Check if the owner's ID matches the user's ID
+      if (req.user._id === `${card.owner}`) {
+        Card.findByIdAndRemove(req.params.cardId).then(
+          res.send({ data: card }),
+        );
+      } else {
+        const error = new Error(
+          'Error: No card found with that id on your account',
+        );
+        error.statusCode = 404;
+        error.name = 'DocumentNotFoundError';
+        throw error;
+      }
+    })
     .catch((err) => {
       // Validation Error handling
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
-      } if (err.name === 'CastError') {
+      }
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE400).send('Error: Not valid id');
         return;
       }
@@ -75,7 +90,8 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
-      } if (err.name === 'CastError') {
+      }
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE400).send('Error: Not valid id');
         return;
       }
@@ -104,7 +120,8 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
-      } if (err.name === 'CastError') {
+      }
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE400).send('Error: Not valid id');
         return;
       }

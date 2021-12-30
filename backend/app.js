@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyparser = require('body-parser');
+const { errors } = require('celebrate'); // sprint15
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 
@@ -20,14 +21,15 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 // Temporary solution, the card have the same author in the database
-app.use((req, res, next) => {
-  req.user = {
-    _id: '61adfd772f61a35cbef311c0', // the test user's _id
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '61cc867c7ced2c71f616b5ff', // the test user's _id
+//   };
 
-  next();
-});
+//   next();
+// });
 
 app.use('/', usersRouter, cardsRouter, doesUrlExist);
+app.use(errors()); // sprint15
 
 app.listen(PORT);
