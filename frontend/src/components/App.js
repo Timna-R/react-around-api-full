@@ -47,34 +47,36 @@ function App() {
   // User details
   const [currentUser, setCurrentUser] = React.useState({
     name: "",
-    description: "",
+    about: "",
     avatar:
       "https://i.imagesup.co/images2/38c8c6871241795530bae71a06c75ae7e1908765.jpg",
+    owner: "", //sprint15
     _id: "",
   });
+  const [token, setToken] = React.useState(localStorage.getItem("token"));
+
   // Get Initial Cards from API
-  React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  // React.useEffect(() => {
+  //   api
+  //     .getInitialCards(token)
+  //     .then((res) => {
+  //       setCards(res.data);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
+
   // Get Initial User Info from API
-  React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((data) => {
-        setCurrentUser({
-          name: data.name,
-          description: data.about,
-          avatar: data.avatar,
-          id: data._id,
-        });
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  // React.useEffect(() => {
+  //   api
+  //     .getUserInfo(token)//sprint 15
+  //     .then((res) => {
+  //       console.log(`222 ${res}`)
+  //       setCurrentUser(res.data) //sprint 15
+  // Get Initial Cards from API
+  //       api.getInitialCards(token).then((cards) => setCards(cards.data)); //sprint 15
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, [token]);
 
   // Close popup By Escape
   React.useEffect(() => {
@@ -89,36 +91,82 @@ function App() {
     return () => document.removeEventListener("keydown", closeByEscape);
   }, []);
 
-  // Token check, user is logged in automatically
+  // Check Token, user is logged in automatically
   React.useEffect(() => {
-    tokenCheck();
-  }, []);
-
-  const tokenCheck = () => {
-    if (!localStorage.getItem("token")) {
+    //tokenCheck();
+    if (!token) {
+      // sprint 15
       const error = new Error(
         "Token not provided or provided in the wrong format"
       );
       error.statusCode = 400;
       console.log(`Error: ${error.statusCode}; ${error.message}`);
     } else {
-      const jwt = localStorage.getItem("token");
       auth
-        .getContent(jwt)
+        .getContent(token) // sprint 15
         .then((res) => {
           if (res) {
             setValues({ email: res.data.email });
             setLoggedIn(true);
+            // // Get Initial User Info from API
+            // api
+            // .getUserInfo(token)//sprint 15
+            //   .then((res) => {
+            //     setCurrentUser(res.data) //sprint 15
+            //     // Get Initial Cards from API
+            //     api.getInitialCards(token).then((cards) => setCards(cards.data)); //sprint 15
+            //   })
+            //   .catch((err) => console.log(err));
             history.push("/users/me");
           }
         })
         .catch((err) => {
           const error = new Error("The provided token is invalid");
           error.statusCode = 401;
-          console.log(`Error: ${error.statusCode}; ${error.message}`);
+          console.log(`Error: ${error.statusCode}; ${error.message} ${token}`);
         });
     }
-  };
+  }, [history]);
+
+  //Get Initial User Info from API
+  React.useEffect(() => {
+    api
+      .getUserInfo(token) //sprint 15
+      .then((res) => {
+        console.log(`222 ${res}`);
+        setCurrentUser(res.data); //sprint 15
+        //Get Initial Cards from API
+        api.getInitialCards(token).then((cards) => setCards(cards.data)); //sprint 15
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  // const tokenCheck = () => {
+  //   //if (!localStorage.getItem("token")) {
+  //   if (!token) { // sprint 15
+  //     const error = new Error(
+  //       "Token not provided or provided in the wrong format"
+  //     );
+  //     error.statusCode = 400;
+  //     console.log(`Error: ${error.statusCode}; ${error.message}`);
+  //   } else {
+  //     // const jwt = localStorage.getItem("token");
+  //     auth
+  //       .getContent(token) // sprint 15
+  //       .then((res) => {
+  //         if (res) {
+  //           setValues({ email: res.data.email });
+  //           setLoggedIn(true);
+  //           history.push("/users/me");
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         const error = new Error("The provided token is invalid");
+  //         error.statusCode = 401;
+  //         console.log(`Error: ${error.statusCode}; ${error.message} ${token}`);
+  //       });
+  //   }
+  // };
 
   const handleChangeRegister = (event) => {
     const { name, value } = event.target;
@@ -137,7 +185,9 @@ function App() {
           error.statusCode = 401;
           throw error;
         } else if (data.token) {
+          setToken(localStorage.setItem("token", data.token)); // sprint15
           setLoggedIn(true);
+          setCurrentUser(data.owner); // sprint15
           history.push("/users/me");
           return;
         }
@@ -175,6 +225,7 @@ function App() {
   function handleLogout() {
     if (localStorage.getItem("token")) {
       localStorage.removeItem("token");
+      setToken("");
       setValues({ email: "", password: "" });
       setIsSuccess(false);
       setLoggedIn(false);
@@ -212,14 +263,15 @@ function App() {
   function handleUpdateUser(data) {
     setLoadingDataSave("Saving...");
     api
-      .setUserInfo(data)
+      .setUserInfo(data, token)
       .then((res) => {
-        setCurrentUser({
-          name: data.name,
-          description: data.about,
-          avatar: res.avatar,
-          id: res._id,
-        });
+        setCurrentUser(res.data);
+        // setCurrentUser({
+        //   name: data.name,
+        //   about: data.about,
+        //   avatar: res.avatar,
+        //   id: res._id,
+        // });
         closeAllPopups();
       })
       .catch((err) => console.log(err))
@@ -230,14 +282,15 @@ function App() {
   function handleUpdateAvatar(data) {
     setLoadingDataSave("Saving...");
     api
-      .setProfilePicture(data)
+      .setProfilePicture(data, token)
       .then((res) => {
-        setCurrentUser({
-          name: res.name,
-          description: res.about,
-          avatar: data.avatar,
-          id: res._id,
-        });
+        setCurrentUser(res.data);
+        // setCurrentUser({
+        //   name: res.name,
+        //   about: res.about,
+        //   avatar: data.avatar,
+        //   id: res._id,
+        // });
         closeAllPopups();
       })
       .catch((err) => console.log(err))
@@ -248,7 +301,7 @@ function App() {
   function handleAddPlaceSubmit(cardData) {
     setLoadingDataCreate("Creating...");
     api
-      .creatCard(cardData)
+      .creatCard(cardData, token)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
@@ -262,7 +315,7 @@ function App() {
     const isLiked = card.likes.some((someId) => someId._id === currentUser.id);
     if (!isLiked) {
       api
-        .likeCard(card._id)
+        .likeCard(card._id, token)
         .then((selectedCard) => {
           setCards((state) =>
             state.map((c) => (c._id === card._id ? selectedCard : c))
@@ -271,7 +324,7 @@ function App() {
         .catch((err) => console.log(err));
     } else {
       api
-        .disLikeCard(card._id)
+        .disLikeCard(card._id, token)
         .then((selectedCard) => {
           setCards((state) =>
             state.map((c) => (c._id === card._id ? selectedCard : c))
@@ -282,9 +335,11 @@ function App() {
   }
   function handleCardDelete(card) {
     api
-      .deleteCard(card._id)
+      .deleteCard(card._id, token)
       .then(() => {
-        const newCards = cards.filter((c) => card._id !== c._id);
+        const newCards = cards.filter(
+          (c) => console.log(card._id) !== console.log(c._id)
+        );
         setCards(newCards);
         closeAllPopups();
       })

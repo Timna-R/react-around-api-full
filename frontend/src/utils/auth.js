@@ -1,4 +1,5 @@
-const BASE_URL = "https://register.nomoreparties.co";
+//const BASE_URL = "https://register.nomoreparties.co";
+const BASE_URL = "http://localhost:3000"; //sprint 15
 
 const customFetch = (url, headers) =>
   fetch(url, headers).then((res) =>

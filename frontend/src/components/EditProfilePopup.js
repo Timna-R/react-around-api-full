@@ -6,26 +6,27 @@ function EditProfilePopup(props) {
   const { currentUser } = React.useContext(AppContext);
   const { isOpen, onClose, onUpdateUser, buttonText } = props;
   const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
+  const [about, setAbout] = React.useState("");
 
   function handleChangeName(e) {
     setName(e.target.value);
   }
-  function handleChangeDescription(e) {
-    setDescription(e.target.value);
+  function handleChangeAbout(e) {
+    setAbout(e.target.value);
   }
   function handleSubmit(e) {
     e.preventDefault();
 
     onUpdateUser({
       name,
-      about: description,
+      about: about,
     });
   }
 
   React.useEffect(() => {
+    console.log(currentUser)
     setName(currentUser.name);
-    setDescription(currentUser.description);
+    setAbout(currentUser.about);
   }, [currentUser, isOpen]);
 
   return (
@@ -53,8 +54,8 @@ function EditProfilePopup(props) {
         id="input-about"
         type="text"
         className="popup__input popup__input_type_about"
-        value={description || ""}
-        onChange={handleChangeDescription}
+        value={about || ""}
+        onChange={handleChangeAbout}
         name="about"
         placeholder="about"
         minLength="2"

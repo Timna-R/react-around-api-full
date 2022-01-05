@@ -4,7 +4,8 @@ import { AppContext } from "../contexts/AppContext";
 function Card(props) {
   const { currentUser } = React.useContext(AppContext);
 
-  const { card, onCardClick, onCardLike, onCardDelete } = props;
+  const { card, onCardClick, onCardLike, onCardDelete, isOpen } = props;
+  console.log(`444${card.owner._id} ${currentUser.id} `)// sprint 15
   const isOwn = card.owner._id === currentUser.id;
   const cardDeleteButtonClassName = isOwn
     ? "cards__delete-button"

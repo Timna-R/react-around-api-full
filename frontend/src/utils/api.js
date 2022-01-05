@@ -1,7 +1,7 @@
 class Api {
-  constructor({ baseUrl, headers }) {
+  constructor({baseUrl}) {
     this._baseUrl = baseUrl;
-    this._headers = headers;
+    // this._headers = headers;
   }
 
   customFetch = (url, headers) =>
@@ -9,21 +9,32 @@ class Api {
     res.ok ? res.json() : Promise.reject(`Error: ${res.status}`)
   );
 
-  getInitialCards() {
+  getInitialCards(token) {
     return this.customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
     });
   }
 
-  getUserInfo() {
+  getUserInfo(token) {
     return this.customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
     });
+  
   }
 
-  setUserInfo(date) {
+  setUserInfo(date, token) {
     return this.customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      //headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
       method: "PATCH",
       body: JSON.stringify({
         name: date.name,
@@ -32,50 +43,70 @@ class Api {
     });
   }
 
-  setProfilePicture(date) {
+  setProfilePicture(date, token) {
     return this.customFetch(`${this._baseUrl}/users/me/avatar`, {
-      headers: this._headers,
+      //headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
       method: "PATCH",
       body: JSON.stringify({ avatar: date.avatar }),
     });
   }
 
-  creatCard(data) {
+  creatCard(data, token) {
     return this.customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      //headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  deleteCard(cardId) {
+  deleteCard(cardId, token) {
     return this.customFetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
     });
   }
 
-  likeCard(cardId) {
-    return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+  likeCard(cardId, token) {
+    return this.customFetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "PUT",
-      headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
     });
   }
 
-  disLikeCard(cardId) {
-    return this.customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+  disLikeCard(cardId, token) {
+    return this.customFetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`},
     });
   }
 }
 
 const api = new Api({
-  baseUrl: "https://around.nomoreparties.co/v1/group-12",
-  headers: {
-    authorization: "5a9a2dff-fd06-428e-8b89-0b14ac9f3305",
-    "Content-Type": "application/json",
-  },
+  //baseUrl: "https://around.nomoreparties.co/v1/group-12",
+  baseUrl: "http://localhost:3000", //sprint 15
+  // headers: {
+  //   //authorization: "5a9a2dff-fd06-428e-8b89-0b14ac9f3305",
+  //   "Accept": "application/json",
+  //   "Content-Type": "application/json",
+  //   "authorization": `Bearer ${localStorage.getItem("jwt")}` //sprint 15
+  // },
 });
 
 export default api;
