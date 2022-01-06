@@ -1,90 +1,78 @@
-const bcrypt = require('bcryptjs'); // sprint 15
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const bcrypt = require("bcryptjs"); // sprint 15
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const BadRequestError = require("../errors/bad-request-err");
+const Conflict = require("../errors/conflict");
+const NotFoundError = require("../errors/not-found-err");
 
-const ERROR_CODE400 = 400;
-const ERROR_CODE500 = 500;
-
-// login and authenticates
-module.exports.login = (req, res) => {
-  // sprint 15
+// Login and authenticates
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
-        { expiresIn: '7d' }, // this token will expire a week after creation
+        "some-secret-key",
+        { expiresIn: "7d" } // This token will expire a week after creation
       );
-      // return the token
+      // Return the token
       res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      // authentication error
+      if (err.name === "Error") {
+        return res.status(401).send({ message: err.name });
+      }
+      next(err);
     });
 };
 
-// returns all users
-module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message }));
-};
-
-// returns a user by _id
-module.exports.getUserById = (req, res) => {
+// Returns a user by _id
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.user._id)
     // Error handling by custom function
     .orFail(() => {
-      const error = new Error('Error: No user found with that id');
-      error.statusCode = 404;
-      error.name = 'DocumentNotFoundError';
-      throw error;
+      throw new NotFoundError("No user with matching ID found");
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(err.statusCode).send(err.message);
-        return;
+      if (err.name === "CastError") {
+        return new BadRequestError("Not valid id");
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE400).send('Error: Not valid id');
-        return;
-      }
-      res.status(ERROR_CODE500).send({ message: err.message });
+      next(err);
     });
 };
 
-// creates a new user
-module.exports.createUser = (req, res) => {
-  const {
-    email, password, name, about, avatar,
-  } = req.body; // sprint15
-  // hashing the password
+// Creates a new user
+module.exports.createUser = (req, res, next) => {
+  const { email, password, name, about, avatar } = req.body;
+  // Hashing the password
   bcrypt
-    .hash(password, 10) // sprint15
-    .then((hash) => User.create({
-      email,
-      password: hash, // adding the hash to the database
-      name,
-      about,
-      avatar,
-    }))
+    .hash(password, 10)
+    .then((hash) =>
+      User.create({
+        email,
+        password: hash, // Adding the hash to the database
+        name,
+        about,
+        avatar,
+      })
+    )
 
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE400)
-          .send('Error: invalid data passed to create user ');
-        return;
+      if (err.name === "ValidationError") {
+        return new BadRequestError("Invalid data passed to create user");
       }
-      res.status(ERROR_CODE500).send({ message: err.message });
+      if (err.name === "MongoServerError") {
+        return new Conflict("An account with this email already exists");
+      }
+      next(err);
     });
 };
 
-// update profile
-module.exports.updateUserProfile = (req, res) => {
+// Update profile
+module.exports.updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -92,19 +80,18 @@ module.exports.updateUserProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-    },
+    }
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE400).send('Error: Data validation failed');
-        return;
+      if (err.name === "ValidationError") {
+        return new BadRequestError("Invalid data validation");
       }
-      res.status(ERROR_CODE500).send({ message: err.message });
+      next(err);
     });
 };
 
-// update avatar
+// Update avatar
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -113,14 +100,13 @@ module.exports.updateUserAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-    },
+    }
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE400).send('Error: Data validation failed');
-        return;
+      if (err.name === "ValidationError") {
+        return new BadRequestError("Invalid data validation");
       }
-      res.status(ERROR_CODE500).send({ message: err.message });
+      next(err);
     });
 };
