@@ -13,6 +13,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
+        //'some-secret-key',
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',  // Secret Keys
         { expiresIn: "7d" } // This token will expire a week after creation
       );
