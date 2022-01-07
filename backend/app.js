@@ -2,20 +2,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const bodyparser = require("body-parser");
+require('dotenv').config();
 const { errors } = require("celebrate"); // sprint15
 var cors = require("cors"); // sprint15
 const usersRouter = require("./routes/users");
 const cardsRouter = require("./routes/cards");
-const NotFoundError = require('./errors/not-found-err');
+const NotFoundError = require("./errors/not-found-err");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect("mongodb://localhost:27017/aroundb");
-
-const doesUrlExist = () => {
-  throw new NotFoundError("Requested resource not found");
-};
 
 app.use(helmet());
 app.use(bodyparser.json());
@@ -23,8 +21,16 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cors());
 app.options("*", cors());
 
+const doesUrlExist = () => {
+  throw new NotFoundError("Requested resource not found");
+};
+// Enabling the request logger
+app.use(requestLogger);
+// Route handlers
 app.use("/", usersRouter, cardsRouter, doesUrlExist);
-// Celebrate error handler   // sprint15
+// enabling the error logger
+app.use(errorLogger);
+// Celebrate error handler
 app.use(errors());
 // Centralized error handler
 app.use((err, req, res, next) => {

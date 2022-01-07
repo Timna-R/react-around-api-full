@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs"); // sprint 15
 const jwt = require("jsonwebtoken");
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require("../models/user");
 const BadRequestError = require("../errors/bad-request-err");
 const Conflict = require("../errors/conflict");
@@ -12,7 +13,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        "some-secret-key",
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',  // Secret Keys
         { expiresIn: "7d" } // This token will expire a week after creation
       );
       // Return the token
