@@ -23,7 +23,7 @@ module.exports.login = (req, res, next) => {
     .catch((err) => {
       // authentication error
       if (err.name === "Error") {
-        return res.status(401).send({ message: err.name });
+        return res.status(401).send({ message: err.message });
       }
       next(err);
     });

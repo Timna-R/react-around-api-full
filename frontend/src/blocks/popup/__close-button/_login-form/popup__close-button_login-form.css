@@ -1,9 +1,0 @@
-@media screen and (max-width: 630px) {
-  .popup__close-button_login-form {
-    width: 40px;
-    min-height: 50px;
-    background-size: 50px 50px;
-    right: 45%;
-    top: -70px;
-  }
-}

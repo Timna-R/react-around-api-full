@@ -1,9 +1,0 @@
-.login__signup_link {
-  text-decoration: none;
-  color: white;
-  opacity: 1;
-}
-
-a:hover {
-  opacity: 0.6;
-}
