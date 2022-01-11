@@ -63,7 +63,7 @@ function App() {
         setCards(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [token]);
 
   // Close popup By Escape
   React.useEffect(() => {
@@ -148,10 +148,6 @@ function App() {
               console.log(res.data);
               setCurrentUser(res.data);
               console.log(token);
-              // Get Initial Cards from API
-              api
-                .getInitialCards(data.token)
-                .then((cards) => setCards(cards.data));
             })
 
             .catch((err) => console.log(err.message));
