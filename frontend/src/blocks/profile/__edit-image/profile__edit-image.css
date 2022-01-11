@@ -1,0 +1,16 @@
+.profile__edit-image {
+    position: absolute;
+    min-width: 120px;
+    min-height: 120px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../../images/big-white-pen.png);
+    top: 0;
+    opacity: 0;
+}
+
+.profile__edit-image:hover {
+    opacity: 1;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.8);
+}

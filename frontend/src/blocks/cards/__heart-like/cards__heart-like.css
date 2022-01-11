@@ -1,0 +1,17 @@
+.cards__heart-like {
+    width: 21px;
+    height: 19px;
+    background-color: transparent;
+    border: none;
+    background-image: url(../../../images/empty-heart.svg);
+    box-sizing: border-box;
+    background-repeat: no-repeat;
+    object-fit: contain;
+    align-self: center;
+    opacity: 1;
+}
+
+.cards__heart-like:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}

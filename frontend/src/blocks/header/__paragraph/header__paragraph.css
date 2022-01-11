@@ -1,0 +1,10 @@
+.header__paragraph {
+  margin: 0;
+}
+
+@media screen and (max-width: 630px) {
+  .header__paragraph {
+    width: 0;
+    visibility: hidden;
+  }
+}
