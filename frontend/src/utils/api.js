@@ -95,7 +95,8 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "http://localhost:3000",
+  //baseUrl: "http://localhost:3000",
+  baseUrl: "https://api.timna-around.students.nomoreparties.sbs",
 });
 
 export default api;
