@@ -52,7 +52,7 @@ PUT/DELETE like or dislike a card - http://localhost:3000/cards/:cardId/likes
 
 **GitHub**
 
-Timna-R/react-around-api-full
+Timna-R/react-around-api-full/backend
 
 
 

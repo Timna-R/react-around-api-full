@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Timna-R/around-express.git"
+    "url": "git+https://github.com/Timna-R/react-around-api-full.git"
   },
   "author": "Timna Rubin",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Timna-R/around-express/issues"
+    "url": "https://github.com/Timna-R/react-around-api-full/backend/issues"
   },
-  "homepage": "https://github.com/Timna-R/around-express#readme",
+  "homepage": "https://github.com/Timna-R/react-around-api-full/backend#readme",
   "devDependencies": {
     "eslint": "^8.5.0",
     "eslint-config-airbnb-base": "^15.0.0",
