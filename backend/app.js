@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyparser = require('body-parser');
 require('dotenv').config();
-const { errors } = require('celebrate'); // sprint15
-const cors = require('cors'); // sprint15
+const { errors } = require('celebrate');
+const cors = require('cors');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
@@ -39,4 +39,6 @@ app.use((err, req, res, next) => {
     message: statusCode === 500 ? 'An error occurred on the server' : message,
   });
 });
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`App listening at port ${PORT}`)
+});
