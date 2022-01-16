@@ -63,7 +63,7 @@ function App() {
         setCards(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [token]);
 
   // Close popup By Escape
   React.useEffect(() => {
