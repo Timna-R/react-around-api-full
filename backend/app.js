@@ -26,6 +26,13 @@ const doesUrlExist = () => {
 };
 // Enabling the request logger
 app.use(requestLogger);
+// server crash testing
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Server will crash now');
+  }, 0);
+});
+
 // Route handlers
 app.use('/', usersRouter, cardsRouter, doesUrlExist);
 // enabling the error logger
