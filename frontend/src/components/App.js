@@ -130,7 +130,6 @@ function App() {
     auth
       .authorize(values)
       .then((data) => {
-        console.log(token);
         if (!data) {
           const error = new Error(
             "The user with the specified email not found"
@@ -145,9 +144,7 @@ function App() {
           api
             .getUserInfo(data.token)
             .then((res) => {
-              console.log(res.data);
               setCurrentUser(res.data);
-              console.log(token);
             })
 
             .catch((err) => console.log(err.message));
