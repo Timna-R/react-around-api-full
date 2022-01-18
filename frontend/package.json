@@ -21,7 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "npm run build && scp -r ./build/* timnar312@timna-around.students.nomoreparties.sbs:/home/timnar312/react-around-api-full/frontend"
+    "deploy": "npm run build && scp -r ./build/* timnar312@timnarub-around.students.nomoreparties.sbs:/home/timnar312/frontend2"
   },
   "eslintConfig": {
     "extends": [

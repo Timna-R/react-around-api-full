@@ -96,7 +96,7 @@ class Api {
 
 const api = new Api({
   //baseUrl: "http://localhost:3000",
-  baseUrl: "https://api.timna-around.students.nomoreparties.sbs",
+  baseUrl: "https://api.timnarub-around.students.nomoreparties.sbs",
   //baseUrl: "https://timna-around.students.nomoreparties.sbs"
 });
 

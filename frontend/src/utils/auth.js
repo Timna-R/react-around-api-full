@@ -1,4 +1,4 @@
-const BASE_URL = "https://api.timna-around.students.nomoreparties.sbs";
+const BASE_URL = "https://timnarub-around.students.nomoreparties.sbs";
 //const BASE_URL = "http://localhost:3000"
 //const BASE_URL = "https://timna-around.students.nomoreparties.sbs"
 
