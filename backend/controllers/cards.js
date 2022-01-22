@@ -25,7 +25,7 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return new BadRequestError('Invalid data passed to create card');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -52,7 +52,7 @@ module.exports.deleteCardById = (req, res, next) => {
       if (err.name === 'CastError') {
         return new NotFoundError('Not valid id');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -74,7 +74,7 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return new NotFoundError('Not valid id');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -96,6 +96,6 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return new NotFoundError('Not valid id');
       }
-      next(err);
+      return next(err);
     });
 };

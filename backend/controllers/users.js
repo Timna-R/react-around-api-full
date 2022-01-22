@@ -26,7 +26,7 @@ module.exports.login = (req, res, next) => {
       if (err.name === 'Error') {
         return res.status(401).send({ message: err.message });
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -42,7 +42,7 @@ module.exports.getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         return new BadRequestError('Not valid id');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -70,7 +70,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'MongoServerError') {
         return new Conflict('An account with this email already exists');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -90,7 +90,7 @@ module.exports.updateUserProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return new BadRequestError('Invalid data validation');
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -110,6 +110,6 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return new BadRequestError('Invalid data validation');
       }
-      next(err);
+      return next(err);
     });
 };
