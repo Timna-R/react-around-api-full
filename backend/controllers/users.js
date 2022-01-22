@@ -61,8 +61,16 @@ module.exports.createUser = (req, res, next) => {
       about,
       avatar,
     }))
-
-    .then((user) => res.send({ data: user }))
+    .then((data) => res.send({
+      data: {
+        email: data.email,
+        name: data.name,
+        about: data.about,
+        avatar: data.avatar,
+        _id: data._id,
+        __v: data.__v,
+      },
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return new BadRequestError('Invalid data passed to create user');
