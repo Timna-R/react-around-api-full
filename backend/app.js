@@ -9,6 +9,7 @@ const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const errorHandling = require('./middlewares/error-handling')
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -40,12 +41,7 @@ app.use(errorLogger);
 // Celebrate error handler
 app.use(errors());
 // Centralized error handler
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'An error occurred on the server' : message,
-  });
-});
+app.use(errorHandling());
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
