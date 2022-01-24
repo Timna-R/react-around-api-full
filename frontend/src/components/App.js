@@ -261,8 +261,7 @@ function App() {
       });
   }
   function handleCardLike(card) {
-    const isLiked = card.likes.some((someId) => someId._id === currentUser._id);
-    //const isLiked = card.likes.some((someId) => someId === currentUser._id);
+    const isLiked = card.likes.some((someId) => someId === currentUser._id);
     if (!isLiked) {
       api
         .likeCard(card._id, token)
