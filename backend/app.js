@@ -10,7 +10,7 @@ const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const errorHandling = require('./middlewares/error-handling')
+const errorHandling = require('./middlewares/error-handling');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -20,7 +20,7 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 // Limit maximum of 100 requests from IP, in 15 minutes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100
+  max: 100,
 });
 
 app.use(helmet());

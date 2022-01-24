@@ -1,11 +1,11 @@
-const { celebrate, Joi } = require("celebrate");
-const validator = require("validator");
+const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
 
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
     return value;
   }
-  return helpers.error("string.uri");
+  return helpers.error('string.uri');
 };
 
 const validate = celebrate({
@@ -20,15 +20,21 @@ const validate = celebrate({
 
 const validateObjId = celebrate({
   // validate parameters
-  params: Joi.object().keys({
-    _id: Joi.string().length(24).hex(),
-  }).unknown(true),
-  headers: Joi.object().keys({
-    // validate headers
-  }).unknown(true),
-  query: Joi.object().keys({
-    // validate query
-  }).unknown(true),
-})
+  params: Joi.object()
+    .keys({
+      _id: Joi.string().length(24).hex(),
+    })
+    .unknown(true),
+  headers: Joi.object()
+    .keys({
+      // validate headers
+    })
+    .unknown(true),
+  query: Joi.object()
+    .keys({
+      // validate query
+    })
+    .unknown(true),
+});
 
-module.exports = {validate, validateObjId};
+module.exports = { validate, validateObjId };

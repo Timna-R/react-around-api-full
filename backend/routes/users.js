@@ -6,7 +6,7 @@ const {
   updateUserProfile,
   updateUserAvatar,
 } = require('../controllers/users');
-const {validate, validateObjId} = require('../middlewares/validation');
+const { validate, validateObjId } = require('../middlewares/validation');
 const auth = require('../middlewares/auth');
 
 usersRouter.post('/signin', validate, validateObjId, login);
