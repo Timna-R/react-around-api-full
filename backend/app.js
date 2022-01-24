@@ -5,6 +5,7 @@ const bodyparser = require('body-parser');
 require('dotenv').config();
 const { errors } = require('celebrate');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-err');
@@ -15,6 +16,12 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
+
+// Limit maximum of 100 requests from IP, in 15 minutes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+});
 
 app.use(helmet());
 app.use(bodyparser.json());
@@ -34,6 +41,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
+// Applying the rate-limiter
+app.use(limiter);
 // Route handlers
 app.use('/', usersRouter, cardsRouter, doesUrlExist);
 // enabling the error logger
