@@ -45,16 +45,6 @@ const validateObjId = celebrate({
       _id: Joi.string().length(24).hex(),
     })
     .unknown(true),
-  headers: Joi.object()
-    .keys({
-      // validate headers
-    })
-    .unknown(true),
-  query: Joi.object()
-    .keys({
-      // validate query
-    })
-    .unknown(true),
 });
 
 module.exports = {
