@@ -31,14 +31,11 @@ module.exports.createCard = (req, res, next) => {
 
 // deletes a card by id
 module.exports.deleteCardById = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    // Error handling by custom function
-    .orFail(() => {
-      // Validation Error handling
-      throw new NotFoundError('No card found with that id');
-    })
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      // Check if the owner's ID matches the user's ID
+      if (!card) {
+        throw new NotFoundError('No card found with that id');
+      }
       if (req.user._id === `${card.owner}`) {
         Card.findByIdAndRemove(req.params.cardId).then(
           res.send({ data: card }),
@@ -50,10 +47,11 @@ module.exports.deleteCardById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new NotFoundError('Not valid id');
+        throw new BadRequestError('Not valid id');
       }
-      return next(err);
-    });
+      next(err);
+    })
+    .catch(next);
 };
 
 // like a card by id
@@ -66,16 +64,19 @@ module.exports.likeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => {
-      throw new NotFoundError('No card found with that id');
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('No card found with that id');
+      }
+      res.send({ data: card });
     })
-    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new NotFoundError('Not valid id');
+        throw new BadRequestError('Not valid id');
       }
-      return next(err);
-    });
+      next(err);
+    })
+    .catch(next);
 };
 
 // unlike a card
@@ -88,14 +89,17 @@ module.exports.dislikeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => {
-      throw new NotFoundError('No card found with that id');
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('No card found with that id');
+      }
+      res.send({ data: card });
     })
-    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new NotFoundError('Not valid id');
+        throw new BadRequestError('Not valid id');
       }
-      return next(err);
-    });
+      next(err);
+    })
+    .catch(next);
 };

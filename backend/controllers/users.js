@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs'); // sprint 15
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -6,6 +6,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/bad-request-err');
 const Conflict = require('../errors/conflict');
 const NotFoundError = require('../errors/not-found-err');
+const Unauthorized = require('../errors/unauthorized');
 
 // Login and authenticates
 module.exports.login = (req, res, next) => {
@@ -24,7 +25,7 @@ module.exports.login = (req, res, next) => {
     .catch((err) => {
       // authentication error
       if (err.name === 'Error') {
-        return res.status(401).send({ message: err.message });
+        next(new Unauthorized(err.message)); // Fixed
       }
       return next(err);
     });
@@ -37,13 +38,19 @@ module.exports.getUserById = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('No user with matching ID found');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('No user with matching ID found');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new BadRequestError('Not valid id');
+        throw new BadRequestError('Not valid id');
       }
-      return next(err);
-    });
+      next(err);
+    })
+    .catch(next);
 };
 
 // Creates a new user
@@ -51,35 +58,42 @@ module.exports.createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
-  // Hashing the password
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => User.create({
-      email,
-      password: hash, // Adding the hash to the database
-      name,
-      about,
-      avatar,
-    }))
-    .then((data) => res.send({
-      data: {
-        email: data.email,
-        name: data.name,
-        about: data.about,
-        avatar: data.avatar,
-        _id: data._id,
-        __v: data.__v,
-      },
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return new BadRequestError('Invalid data passed to create user');
+  return User.findOne({ email })
+    .then((user) => { // Fixed
+      if (user) { // If this email exist
+        throw new Conflict('An account with this email already exists');
       }
-      if (err.name === 'MongoServerError') {
-        return new Conflict('An account with this email already exists');
-      }
-      return next(err);
-    });
+      // Hashing the password
+      bcrypt
+        .hash(password, 10)
+        .then((hash) => User.create({
+          email,
+          password: hash, // Adding the hash to the database
+          name,
+          about,
+          avatar,
+        }))
+        .then((data) => res.send({
+          data: {
+            email: data.email,
+            name: data.name,
+            about: data.about,
+            avatar: data.avatar,
+            _id: data._id,
+            __v: data.__v,
+          },
+        }))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            return new BadRequestError('Invalid data passed to create user');
+          }
+          if (err.code === 11000) {
+            return new Conflict('An account with this email already exists');
+          }
+          return next(err);
+        });
+    })
+    .catch((err) => next(err));
 };
 
 // Update profile
